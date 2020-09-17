@@ -45,7 +45,7 @@ def is_in_cset(x,y,theta,c_set):
 
 def try_steering_angles(range_,first_node,car,open_set,c_set):
     for phi in range_ :
-            flag,node_ = calculate_positions(first_node.x,first_node.y,phi,first_node.theta,car,change_list(first_node.controls),change_list(first_node.times),0.2)
+            flag,node_ = calculate_positions(first_node.x,first_node.y,phi,first_node.theta,car,change_list(first_node.controls),change_list(first_node.times),0.3)
             if flag and not is_in_cset(node_.x,node_.y,node_.theta,c_set) :
                 c_set.append([round(node_.x,1), round(node_.y,1), round(node_.theta,1)])
                 open_set.append(node_)
@@ -54,8 +54,13 @@ def try_steering_angles(range_,first_node,car,open_set,c_set):
 def calculate_positions(x,y,phi,theta,car,controls,times,threshold):
     cost = 0
     dt = 0.01
+    iterations = 0
 
-    for i in range(100 if phi == 0 else 157):
+    if phi == 0 :
+        iterations = 100
+    else :
+        iterations = 157
+    for i in range(iterations):
         x, y, theta = step(car,x, y, theta, phi)
         while theta >= math.pi:
             theta -= 2*math.pi
@@ -78,7 +83,8 @@ def calculate_positions(x,y,phi,theta,car,controls,times,threshold):
     return True, node_return
 
 def plan_path(car):
-    threshold = 0.2
+    #Implementation based on BFS algorithm
+    threshold = 0.3
     angle_range = [-math.pi/4, 0, math.pi/4]
     new_node = node(0,car.x0,car.y0,[],[0],euclidean_distance(car.x0,car.y0,car.xt,car.yt))
     open_set =[new_node]
