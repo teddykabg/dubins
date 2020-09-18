@@ -6,7 +6,7 @@
 
 from dubins import *
 import numpy as np
-import math
+
 class node :
         def __init__(self,theta,x,y,controls,times,cost) :
             self.theta = theta
@@ -60,20 +60,22 @@ def calculate_positions(x,y,phi,theta,car,controls,times,threshold):
         iterations = 100
     else :
         iterations = 157
+
     for i in range(iterations):
         x, y, theta = step(car,x, y, theta, phi)
-        while theta >= math.pi:
-            theta -= 2*math.pi
+        while theta >= np.pi:
+            theta -= 2*np.pi
 
-        while theta <= -2*math.pi:
-            theta += math.pi  
+        while theta <= -2*np.pi:
+            theta += np.pi  
 
         controls.append(phi)
         times.append(times[-1] + dt)
-        
+        #Chechk whether the path is not to follow, in that case we attribute high cost
         if check_collisions(x,y,car) or check_outbounds(x,y,car):
             node_return = node(0,0,0,controls,times,10000)
             return False, node_return
+        #If I'm at the final destination lowest cost possible 0s
         elif euclidean_distance(x,y,car.xt,car.yt) <= threshold:
             node_return = node(theta,x,y,controls,times,0)
             return True, node_return
@@ -85,7 +87,7 @@ def calculate_positions(x,y,phi,theta,car,controls,times,threshold):
 def plan_path(car):
     #Implementation based on BFS algorithm
     threshold = 0.3
-    angle_range = [-math.pi/4, 0, math.pi/4]
+    angle_range = [-np.pi/4, 0, np.pi/4] 
     new_node = node(0,car.x0,car.y0,[],[0],euclidean_distance(car.x0,car.y0,car.xt,car.yt))
     open_set =[new_node]
     c_set = []
@@ -95,6 +97,7 @@ def plan_path(car):
         #If the condition is satisfied I reached the target
         if euclidean_distance(first_node.x,first_node.y,car.xt,car.yt) <= threshold :
             return first_node.controls, first_node.times
+        #Computes and evaluate possible paths given different steering angles
         try_steering_angles(angle_range,first_node,car,open_set,c_set)
     return [],[0]
 
