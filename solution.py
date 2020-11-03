@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # {Teddy Gyabaah}
-# {07578855}
+# {}
 # {gyabaah@kth.se}
 
 from dubins import *
